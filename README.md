@@ -8,7 +8,7 @@ An extremely lightweight neofetch-like bash script, designed for Zorin OS.
 
 Download, unzip and move the file "zorinfetch" to the usr/bin/ directory.
 ```
-sudo mv zorinfetch /usr/bin
+sudo mv zorinfetch /usr/bin/
 ```
 ```
 zorinfetch
