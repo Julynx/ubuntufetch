@@ -18,7 +18,7 @@ sudo cp zorinfetch /usr/bin/
 ```
 The program can now be ran from a terminal with the command:
 ```
-pswm
+zorinfetch
 ```
 You may now add it to your bashrc so it shows up whenever you open a terminal.
 ```
