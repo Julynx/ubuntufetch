@@ -12,8 +12,14 @@ The following commands will download the latest version of zorinfetch from this 
 and install it in your `/usr/bin/` directory:
 ```
 git clone https://github.com/Julynx/zorinfetch
+```
+```
 cd zorinfetch
+```
+```
 chmod +x zorinfetch
+```
+```
 sudo cp zorinfetch /usr/bin/
 ```
 The program can now be ran from a terminal with the command:
