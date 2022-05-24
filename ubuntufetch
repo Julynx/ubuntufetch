@@ -1,0 +1,81 @@
+#!/usr/bin/env python3
+
+
+"""
+@file     ubuntufetch
+@date     24/05/2022
+@version  0.8
+@license  GNU General Public License v2.0
+@url      github.com/Julynx/ubuntufetch
+@author   Julynx
+"""
+
+
+from subprocess import Popen, PIPE
+from colorama import Fore
+
+
+def get_hostname():  # Unused
+    c_hostname = "$(whoami)@$(hostname)"
+    subprocess1 = Popen("echo " + c_hostname, shell=True, stdout=PIPE)
+    return subprocess1.stdout.read().decode('utf-8').strip()
+
+
+def get_distro():
+    c_distro = """$(hostnamectl) | awk '{print $17 " " $18 " " $19}'"""
+    subprocess2 = Popen("echo " + c_distro, shell=True, stdout=PIPE)
+    return subprocess2.stdout.read().decode('utf-8').strip()
+
+
+def get_kernel():
+    c_kernel = "$(uname -r)"
+    subprocess3 = Popen("echo " + c_kernel, shell=True, stdout=PIPE)
+    return subprocess3.stdout.read().decode('utf-8').strip()
+
+
+def get_uptime():
+    c_uptime = "$(uptime -p | cut -c 4-)"
+    subprocess5 = Popen("echo " + c_uptime, shell=True, stdout=PIPE)
+    return subprocess5.stdout.read().decode('utf-8').strip()
+
+
+def get_pkgs():  # Unused (slow)
+    c_pkgs = "$(dpkg-query -l | grep '^ii' | wc -l ) installed"
+    subprocess6 = Popen("echo " + c_pkgs, shell=True, stdout=PIPE)
+    return subprocess6.stdout.read().decode('utf-8').strip()
+
+
+def get_memory():
+    c_memory = """$(free | grep Mem | awk '{printf("%.1f", $3/1000000)}')GB used of $(free -m| grep Mem | awk '{printf("%.1f", $2/1000)}')GB"""
+    subprocess7 = Popen("echo " + c_memory, shell=True, stdout=PIPE)
+    return subprocess7.stdout.read().decode('utf-8').strip()
+
+
+def get_battery():
+    c_battery = "upower -i /org/freedesktop/UPower/devices/battery_BAT1 | grep -i 'state\|percentage' | awk '{print($2)}' | tac | tr '\n' ' '"
+    subprocess8 = Popen(c_battery, shell=True, stdout=PIPE)
+    return subprocess8.stdout.read().decode('utf-8').strip()
+
+
+def get_desktop_env():
+    c_desktop_env = "$(echo $DESKTOP_SESSION)"
+    subprocess10 = Popen("echo " + c_desktop_env, shell=True, stdout=PIPE)
+    return subprocess10.stdout.read().decode('utf-8').capitalize().strip()
+
+
+# Print system data
+print(f"{Fore.YELLOW}Distro   {Fore.WHITE}{get_distro()}")
+print(f"{Fore.YELLOW}Session  {Fore.WHITE}{get_desktop_env()}")
+print(f"{Fore.YELLOW}Kernel   {Fore.WHITE}{get_kernel()}")
+print(f"{Fore.YELLOW}Uptime   {Fore.WHITE}{get_uptime()}")
+print(f"{Fore.YELLOW}Memory   {Fore.WHITE}{get_memory()}")
+print(f"{Fore.YELLOW}Battery  {Fore.WHITE}{get_battery()}\n")
+
+
+# Print color palette with box characters
+separator, block = " ", "████"
+rows = 2
+
+for row in range(rows):
+    print(f"{Fore.RED}{block}{separator}{Fore.GREEN}{block}{separator}{Fore.YELLOW}{block}{separator}{Fore.BLUE}{block}{separator}{Fore.MAGENTA}{block}{separator}{Fore.CYAN}{block}{Fore.RESET}")
+print()
