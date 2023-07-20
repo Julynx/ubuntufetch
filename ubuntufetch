@@ -3,8 +3,8 @@
 
 """
 @file     ubuntufetch
-@date     24/05/2022
-@version  0.8
+@date     20/07/2023
+@version  1.0
 @license  GNU General Public License v2.0
 @url      github.com/Julynx/ubuntufetch
 @author   Julynx
@@ -12,19 +12,26 @@
 
 
 from subprocess import Popen, PIPE
-from colorama import Fore
 
-
-def get_hostname():  # Unused
-    c_hostname = "$(whoami)@$(hostname)"
-    subprocess1 = Popen("echo " + c_hostname, shell=True, stdout=PIPE)
-    return subprocess1.stdout.read().decode('utf-8').strip()
+RED = "\033[1;31m"
+GREEN = "\033[1;32m"
+YELLOW = "\033[1;33m"
+BLUE = "\033[1;34m"
+MAGENTA = "\033[1;35m"
+CYAN = "\033[1;36m"
+RESET = "\033[0;0m"
 
 
 def get_distro():
-    c_distro = """$(hostnamectl) | awk '{print $17 " " $18 " " $19}'"""
+    c_distro = """$(hostnamectl | grep "Operating System" | awk '{print($3 " " $4 " " $5)}')"""
     subprocess2 = Popen("echo " + c_distro, shell=True, stdout=PIPE)
     return subprocess2.stdout.read().decode('utf-8').strip()
+
+
+def get_session():
+    c_display_server = "echo $DESKTOP_SESSION"
+    subprocess9 = Popen(c_display_server, shell=True, stdout=PIPE)
+    return subprocess9.stdout.read().decode('utf-8').strip().capitalize()
 
 
 def get_kernel():
@@ -39,43 +46,35 @@ def get_uptime():
     return subprocess5.stdout.read().decode('utf-8').strip()
 
 
-def get_pkgs():  # Unused (slow)
-    c_pkgs = "$(dpkg-query -l | grep '^ii' | wc -l ) installed"
-    subprocess6 = Popen("echo " + c_pkgs, shell=True, stdout=PIPE)
-    return subprocess6.stdout.read().decode('utf-8').strip()
-
-
 def get_memory():
-    c_memory = """$(free | grep Mem | awk '{printf("%.1f", $3/1000000)}')GB used of $(free -m| grep Mem | awk '{printf("%.1f", $2/1000)}')GB"""
+    c_memory = """$(free | grep Mem | awk '{printf("%.1f", $3/1000000)}')GB of $(free -m| grep Mem | awk '{printf("%d", ($2/1000)+1)}')GB used"""
     subprocess7 = Popen("echo " + c_memory, shell=True, stdout=PIPE)
     return subprocess7.stdout.read().decode('utf-8').strip()
 
 
 def get_battery():
-    c_battery = "upower -i /org/freedesktop/UPower/devices/battery_BAT1 | grep -i 'state\|percentage' | awk '{print($2)}' | tac | tr '\n' ' '"
+    c_battery = "upower -i /org/freedesktop/UPower/devices/battery_BAT0 | grep -i 'state\|percentage' | awk '{print($2)}' | tac | tr '\n' ' '"
     subprocess8 = Popen(c_battery, shell=True, stdout=PIPE)
     return subprocess8.stdout.read().decode('utf-8').strip()
 
 
-def get_desktop_env():
-    c_desktop_env = "$(echo $DESKTOP_SESSION)"
-    subprocess10 = Popen("echo " + c_desktop_env, shell=True, stdout=PIPE)
-    return subprocess10.stdout.read().decode('utf-8').capitalize().strip()
-
-
-# Print system data
-print(f"{Fore.YELLOW}Distro   {Fore.WHITE}{get_distro()}")
-print(f"{Fore.YELLOW}Session  {Fore.WHITE}{get_desktop_env()}")
-print(f"{Fore.YELLOW}Kernel   {Fore.WHITE}{get_kernel()}")
-print(f"{Fore.YELLOW}Uptime   {Fore.WHITE}{get_uptime()}")
-print(f"{Fore.YELLOW}Memory   {Fore.WHITE}{get_memory()}")
-print(f"{Fore.YELLOW}Battery  {Fore.WHITE}{get_battery()}\n")
-
-
-# Print color palette with box characters
-separator, block = " ", "████"
 rows = 2
+separator, block = " ", "████"
+colors = rows * (f"{RED}{block}{separator}"
+                 f"{GREEN}{block}{separator}"
+                 f"{YELLOW}{block}{separator}"
+                 f"{BLUE}{block}{separator}"
+                 f"{MAGENTA}{block}{separator}"
+                 f"{CYAN}{block}{separator}"
+                 f"{RESET}\n")
 
-for row in range(rows):
-    print(f"{Fore.RED}{block}{separator}{Fore.GREEN}{block}{separator}{Fore.YELLOW}{block}{separator}{Fore.BLUE}{block}{separator}{Fore.MAGENTA}{block}{separator}{Fore.CYAN}{block}{Fore.RESET}")
-print()
+data = (f"{YELLOW}Distro     {RESET}{get_distro()}\n"
+        f"{YELLOW}Session    {RESET}{get_session()}\n"
+        f"{YELLOW}Kernel     {RESET}{get_kernel()}\n"
+        f"{YELLOW}Uptime     {RESET}{get_uptime()}\n"
+        f"{YELLOW}Memory     {RESET}{get_memory()}\n"
+        f"{YELLOW}Battery    {RESET}{get_battery()}\n"
+        "\n"
+        f"{colors}")
+
+print(data)
