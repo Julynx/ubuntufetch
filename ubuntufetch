@@ -3,8 +3,8 @@
 
 """
 @file     ubuntufetch
-@date     20/07/2023
-@version  1.0
+@date     10/08/2023
+@version  1.0.1
 @license  GNU General Public License v2.0
 @url      github.com/Julynx/ubuntufetch
 @author   Julynx
@@ -23,43 +23,62 @@ RESET = "\033[0;0m"
 
 
 def get_distro():
-    c_distro = """$(hostnamectl | grep "Operating System" | awk '{print($3 " " $4 " " $5)}')"""
-    subprocess2 = Popen("echo " + c_distro, shell=True, stdout=PIPE)
-    return subprocess2.stdout.read().decode('utf-8').strip()
+    cmd = """$(hostnamectl | grep "Operating System" | awk '{print($3 " " $4 " " $5)}')"""
+    return (Popen("echo " + cmd, shell=True, stdout=PIPE)
+            .stdout
+            .read()
+            .decode('utf-8')
+            .strip())
 
 
 def get_session():
-    c_display_server = "echo $DESKTOP_SESSION"
-    subprocess9 = Popen(c_display_server, shell=True, stdout=PIPE)
-    return subprocess9.stdout.read().decode('utf-8').strip().capitalize()
+    cmd = "echo $DESKTOP_SESSION"
+    return (Popen(cmd, shell=True, stdout=PIPE)
+            .stdout
+            .read()
+            .decode('utf-8')
+            .strip()
+            .capitalize())
 
 
 def get_kernel():
-    c_kernel = "$(uname -r)"
-    subprocess3 = Popen("echo " + c_kernel, shell=True, stdout=PIPE)
-    return subprocess3.stdout.read().decode('utf-8').strip()
+    cmd = "$(uname -r)"
+    return (Popen("echo " + cmd, shell=True, stdout=PIPE)
+            .stdout
+            .read()
+            .decode('utf-8')
+            .strip())
 
 
 def get_uptime():
-    c_uptime = "$(uptime -p | cut -c 4-)"
-    subprocess5 = Popen("echo " + c_uptime, shell=True, stdout=PIPE)
-    return subprocess5.stdout.read().decode('utf-8').strip()
+    cmd = "$(uptime -p | cut -c 4-)"
+    return (Popen("echo " + cmd, shell=True, stdout=PIPE)
+            .stdout
+            .read()
+            .decode('utf-8')
+            .strip())
 
 
 def get_memory():
-    c_memory = """$(free | grep Mem | awk '{printf("%.1f", $3/1000000)}')GB of $(free -m| grep Mem | awk '{printf("%d", ($2/1000)+1)}')GB used"""
-    subprocess7 = Popen("echo " + c_memory, shell=True, stdout=PIPE)
-    return subprocess7.stdout.read().decode('utf-8').strip()
+    cmd = """$(free | grep Mem | awk '{printf("%.1f", $3/1000000)}')GB of $(free -m| grep Mem | awk '{printf("%d", ($2/1000)+1)}')GB used"""
+    return (Popen("echo " + cmd, shell=True, stdout=PIPE)
+            .stdout
+            .read()
+            .decode('utf-8')
+            .strip())
 
 
 def get_battery():
-    c_battery = "upower -i /org/freedesktop/UPower/devices/battery_BAT0 | grep -i 'state\|percentage' | awk '{print($2)}' | tac | tr '\n' ' '"
-    subprocess8 = Popen(c_battery, shell=True, stdout=PIPE)
-    return subprocess8.stdout.read().decode('utf-8').strip()
+    cmd = "upower -i /org/freedesktop/UPower/devices/battery_BAT0 | grep -i 'state\|percentage' | awk '{print($2)}' | tac | tr '\n' ' '"
+    return (Popen(cmd, shell=True, stdout=PIPE)
+            .stdout
+            .read()
+            .decode('utf-8')
+            .strip())
 
 
 rows = 2
-separator, block = " ", "████"
+separator, block = " ", "█" * 4
 colors = rows * (f"{RED}{block}{separator}"
                  f"{GREEN}{block}{separator}"
                  f"{YELLOW}{block}{separator}"
